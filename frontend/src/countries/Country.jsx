@@ -1,7 +1,7 @@
 export default function Country(props) {
   return (
     <div key={props.data.id}>
-      <h2>{props.data.name}</h2>
+      <h3>{props.data.name}</h3>
       <img src={props.data.flag_url} alt={props.data.name} width="30" />
       <p>Continent: {props.data.continent}</p>
       <p>Gold Medals: {props.data.gold_medals}</p>

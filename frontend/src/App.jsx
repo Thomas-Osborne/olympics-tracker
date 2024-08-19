@@ -1,38 +1,38 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import {
+    BrowserRouter, Routes, Route, Link
+  } from 'react-router-dom';
 
-import Country from './countries/Country';
+import Countries from './countries/Countries';
+import Events from './events/Events';
+import Home from './Home';
+import Sports from './sports/Sports';
+import Venues from './venues/Venues';
 
 export default function App() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/api/countries');
-                setData(response.data.data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-              setLoading(false)
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (loading) return <div>Loading...</div>;
-
+    const names = {
+        countries: "Countries",
+        sports: "Sports",
+        events: "Events",
+        venues: "Venues",
+    }
     return (
-        <div className="App">
+        <BrowserRouter>
+            <div>
+                <Link to="/countries">{names.countries}</Link>
+                <Link to="/sports">{names.sports}</Link>
+                <Link to="/events">{names.events}</Link>
+                <Link to="/venues">{names.venues}</Link>
+            </div>
             <h1>Paris 2024 Data</h1>
-            {data 
-                ? data.map(dataItem => (
-                    <Country key={dataItem.id} data={dataItem} />
-                ))
-                : <p>Error fetching data.</p>
-            }
-        </div>
+
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/countries" element={<Countries name={names.countries}/>} />
+                <Route path="/sports" element={<Sports name={names.sports}/>} />
+                <Route path="/events" element={<Events name={names.events}/>} />
+                <Route path="/venues" element={<Venues name={names.venues}/>} />
+            </Routes>
+        </BrowserRouter>
     );
 }

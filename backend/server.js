@@ -5,10 +5,13 @@ const cors = require('cors');
 
 require('dotenv').config();
 
+const Country = require('./models/Country');
+const Event = require('./models/Event');
+const Sport = require('./models/Sport');
+const Venue = require('./models/Venue');
+
 const app = express();
 app.use(cors());
-app.use(express.json()); // can get json body
-
 app.get('/api/events', async (req, res) => {
     try {
         const response = await axios.get('https://apis.codante.io/olympic-games/events');
@@ -121,14 +124,77 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
         console.log("Connected to DB")
         // listen for requests
-        app.listen(process.env.PORT, () => {
+        app.listen(process.env.PORT, async (req, res) => {
             console.log(`Server running on port ${process.env.PORT}`);
-            // attemptFetchingData(); // start attempting to fetch immediately
+            attemptFetchingData(); // start attempting to fetch immediately
 
-            // const timeInterval = 15 * 60 * 60 * 1000 // then check every 15minutes;
-            // setInterval(() => attemptFetchingData(), timeInterval);
+            const timeInterval = 15 * 60 * 60 * 1000 // then check every 15minutes;
+            setInterval(() => attemptFetchingData(), timeInterval);
         })
     })
     .catch((error => {
         console.log(error);
     }))
+
+const attemptFetchingData = async () => {
+    try {
+        // const venues = await axios.get('https://apis.codante.io/olympic-games/venues');
+        // console.log(venues.data.data);
+
+        // for (const venue of venues.data.data) {
+        //     // Check if the venue already exists to avoid duplicates
+        //     const existingVenue = await Venue.findOne({ id: venue.id });
+        //     if (existingVenue) {
+        //         await Venue.updateOne({ id: venue.id }, venue);
+        //     } else {
+        //         await Venue.create(venue);
+        //     }
+        //     console.log("Venues from external API updated.")
+        // }
+
+        // const sports = await axios.get('https://apis.codante.io/olympic-games/disciplines');
+        // console.log(sports.data.data);
+
+        // for (const sport of sports.data.data) {
+        //     // Check if the sport already exists to avoid duplicates
+        //     const existingSport = await Sport.findOne({ id: sport.id });
+        //     if (existingSport) {
+        //         await Sport.updateOne({ id: sport.id }, sport);
+        //     } else {
+        //         await Sport.create(sport);
+        //     }
+        // }
+        // console.log("Sports from external API updated.")
+
+        // const countries = await axios.get('https://apis.codante.io/olympic-games/countries');
+        // console.log(countries.data.data);
+
+        // for (const country of countries.data.data) {
+        //     // Check if the country already exists to avoid duplicates
+        //     const existingCountry = await Country.findOne({ id: country.id });
+        //     if (existingCountry) {
+        //         await Country.updateOne({ id: country.id }, country);
+        //     } else {
+        //         await Country.create(country);
+        //     }
+        // }
+        // console.log("Countries from external API updated.")
+
+        // const events = await axios.get('https://apis.codante.io/olympic-games/events');
+        // console.log(events.data.data);
+
+        // for (const event of events.data.data) {
+        //     // Check if the event already exists to avoid duplicates
+        //     const existingEvent = await Event.findOne({ id: event.id });
+        //     if (existingEvent) {
+        //         await Event.updateOne({ id: event.id }, event);
+        //     } else {
+        //         await Event.create(event);
+        //     }
+        // }
+        // console.log("Events from external API updated.")
+
+    } catch (error) {
+        console.log("An error occured: ", error);
+    }
+}

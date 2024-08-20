@@ -10,8 +10,7 @@ export default function Events(props) {
       const fetchData = async () => {
           try {
               const response = await axios.get('http://localhost:3000/api/events');
-              console.log(response.data);
-              setData(response.data.data);
+              setData(response.data);
           } catch (error) {
               console.error('Error fetching data:', error);
           } finally {

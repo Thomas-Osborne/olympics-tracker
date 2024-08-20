@@ -9,9 +9,8 @@ export default function Sports(props) {
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await axios.get('http://localhost:3000/api/disciplines');
-              console.log(response.data)
-              setData(response.data.data);
+              const response = await axios.get('http://localhost:3000/api/sports');
+              setData(response.data);
           } catch (error) {
               console.error('Error fetching data:', error);
           } finally {

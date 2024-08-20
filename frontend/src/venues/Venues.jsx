@@ -10,7 +10,7 @@ export default function Venues(props) {
       const fetchData = async () => {
           try {
               const response = await axios.get('http://localhost:3000/api/venues');
-              setData(response.data.data);
+              setData(response.data);
           } catch (error) {
               console.error('Error fetching data:', error);
           } finally {

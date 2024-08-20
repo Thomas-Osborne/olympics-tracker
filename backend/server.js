@@ -1,11 +1,13 @@
 const express = require('express');
 const axios = require('axios');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // can get json body
 
 app.get('/api/events', async (req, res) => {
     try {
@@ -115,6 +117,18 @@ app.get('/api/countries/:id', async (req, res) => {
     }
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${process.env.PORT}`);
-});
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("Connected to DB")
+        // listen for requests
+        app.listen(process.env.PORT, () => {
+            console.log(`Server running on port ${process.env.PORT}`);
+            // attemptFetchingData(); // start attempting to fetch immediately
+
+            // const timeInterval = 15 * 60 * 60 * 1000 // then check every 15minutes;
+            // setInterval(() => attemptFetchingData(), timeInterval);
+        })
+    })
+    .catch((error => {
+        console.log(error);
+    }))

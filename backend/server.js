@@ -12,110 +12,95 @@ const Venue = require('./models/Venue');
 
 const app = express();
 app.use(cors());
+
 app.get('/api/events', async (req, res) => {
     try {
-        const response = await axios.get('https://apis.codante.io/olympic-games/events');
-        res.json(response.data);
+        const response = await Event.find();
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error('Error fetching events: ', error);
         res.status(500).send('An error has occurred.');
     }
 });
 
 app.get('/api/events/:id', async (req, res) => {
     try {
-        const id = req.params.id;
-        const response = await axios.get(`https://apis.codante.io/olympic-games/events/${id}`);
-        res.json(response.data);
+        const response = await Event.findOne({ id: req.params.id });
+        if (!response) {
+            return res.status(404).json({ message: 'Event not found.'});
+        }
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching event:', error);
+        console.error('Error fetching event: ', error);
         res.status(500).send('An error occurred');
     }
 });
 
 app.get('/api/venues', async (req, res) => {
     try {
-        const response = await axios.get('https://apis.codante.io/olympic-games/venues');
-        res.json(response.data);
+        const response = await Venue.find();
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching venues:', error);
+        console.error('Error fetching venues: ', error);
         res.status(500).send('An error has occurred.');
     }
 });
 
 app.get('/api/venues/:id', async (req, res) => {
     try {
-        const id = req.params.id;
-        const response = await axios.get('https://apis.codante.io/olympic-games/venues');
-        const venues = response.data.data;
-
-        const venue = venues.find(v => v.id === id);
-
-        if (venue) {
-            res.json(venue);
-        } else {
-            res.status(404).send('Venue not found.');
+        const response = await Venue.findOne({ id: req.params.id });
+        if (!response) {
+            return res.status(404).json({ message: 'Venue not found.'});
         }
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching venue:', error);
+        console.error('Error fetching venue: ', error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+app.get('/api/sports', async (req, res) => {
+    try {
+        const response = await Sport.find();
+        res.json(response);
+    } catch (error) {
+        console.error('Error fetching sports: ', error);
         res.status(500).send('An error has occurred.');
     }
 });
 
-app.get('/api/disciplines', async (req, res) => {
+app.get('/api/sports/:id', async (req, res) => {
     try {
-        const response = await axios.get('https://apis.codante.io/olympic-games/disciplines');
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error fetching disciplines:', error);
-        res.status(500).send('An error has occurred.');
-    }
-});
-
-app.get('/api/disciplines/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const response = await axios.get('https://apis.codante.io/olympic-games/disciplines');
-        const disciplines = response.data.data;
-
-        const discipline = disciplines.find(v => v.id === id);
-
-        if (discipline) {
-            res.json(discipline);
-        } else {
-            res.status(404).send('Discipline not found.');
+        const response = await Sport.findOne({ id: req.params.id });
+        if (!response) {
+            return res.status(404).json({ message: 'Sport not found.'});
         }
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching discipline:', error);
-        res.status(500).send('An error has occurred.');
+        console.error('Error fetching sport: ', error);
+        res.status(500).send('An error has occurred');
     }
 });
 
 app.get('/api/countries', async (req, res) => {
     try {
-        const response = await axios.get('https://apis.codante.io/olympic-games/countries');
-        res.json(response.data);
+        const response = await Country.find();
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching countries:', error);
+        console.error('Error fetching countries: ', error);
         res.status(500).send('An error has occurred.');
     }
 });
 
 app.get('/api/countries/:id', async (req, res) => {
     try {
-        const id = req.params.id;
-        const response = await axios.get('https://apis.codante.io/olympic-games/countries');
-        const countries = response.data.data;
-
-        const country = countries.find(v => v.id === id);
-
-        if (country) {
-            res.json(country);
-        } else {
-            res.status(404).send('Country not found.');
+        const response = await Country.findOne({ id: req.params.id });
+        if (!response) {
+            return res.status(404).json({ message: 'Country not found.'});
         }
+        res.json(response);
     } catch (error) {
-        console.error('Error fetching country:', error);
+        console.error('Error fetching country: ', error);
         res.status(500).send('An error has occurred.');
     }
 });
@@ -133,13 +118,13 @@ mongoose.connect(process.env.MONGODB_URI)
         })
     })
     .catch((error => {
-        console.log(error);
+        console.log("Failed to connect to DB:", error);
     }))
 
 const attemptFetchingData = async () => {
     try {
         const venues = await axios.get('https://apis.codante.io/olympic-games/venues');
-        const venuesData = venues.data.data
+        const venuesData = venues.data.data;
 
         for (const venue of venuesData) {
             // Check if the venue already exists to avoid duplicates
@@ -154,7 +139,7 @@ const attemptFetchingData = async () => {
         console.log("Venues from external API updated.");
 
         const sports = await axios.get('https://apis.codante.io/olympic-games/disciplines');
-        const sportsData = sports.data.data
+        const sportsData = sports.data.data;
 
         for (const sport of sportsData) {
             // Check if the sport already exists to avoid duplicates
@@ -168,7 +153,7 @@ const attemptFetchingData = async () => {
         console.log("Sports from external API updated.");
 
         const countries = await axios.get('https://apis.codante.io/olympic-games/countries');
-        const countryData = countries.data.data
+        const countryData = countries.data.data;
 
         for (const country of countryData) {
             // Check if the country already exists to avoid duplicates
@@ -182,8 +167,8 @@ const attemptFetchingData = async () => {
         console.log("Countries from external API updated.");
 
         const events = await axios.get('https://apis.codante.io/olympic-games/events?page=1');
-        const eventsData = events.data.data
-        lastPage = events.data.meta.last_page
+        const eventsData = events.data.data;
+        lastPage = events.data.meta.last_page;
 
         for (const event of eventsData) {
             // Check if the event already exists to avoid duplicates
@@ -203,7 +188,7 @@ const attemptFetchingData = async () => {
 
         for (let page = 2; page <= lastPage; page++) {
             const events = await axios.get(`https://apis.codante.io/olympic-games/events?page=${page}`);
-            const eventsData = events.data.data
+            const eventsData = events.data.data;
             for (const event of eventsData) {
                 // Check if the event already exists to avoid duplicates
                 const existingEvent = await Event.findOne({ id: event.id });

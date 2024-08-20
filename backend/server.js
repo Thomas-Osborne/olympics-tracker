@@ -139,9 +139,9 @@ mongoose.connect(process.env.MONGODB_URI)
 const attemptFetchingData = async () => {
     try {
         const venues = await axios.get('https://apis.codante.io/olympic-games/venues');
-        console.log(venues.data.data);
+        const venuesData = venues.data.data
 
-        for (const venue of venues.data.data) {
+        for (const venue of venuesData) {
             // Check if the venue already exists to avoid duplicates
             const existingVenue = await Venue.findOne({ id: venue.id });
             if (existingVenue) {
@@ -149,13 +149,14 @@ const attemptFetchingData = async () => {
             } else {
                 await Venue.create(venue);
             }
-            console.log("Venues from external API updated.");
         }
 
-        const sports = await axios.get('https://apis.codante.io/olympic-games/disciplines');
-        console.log(sports.data.data);
+        console.log("Venues from external API updated.");
 
-        for (const sport of sports.data.data) {
+        const sports = await axios.get('https://apis.codante.io/olympic-games/disciplines');
+        const sportsData = sports.data.data
+
+        for (const sport of sportsData) {
             // Check if the sport already exists to avoid duplicates
             const existingSport = await Sport.findOne({ id: sport.id });
             if (existingSport) {
@@ -167,9 +168,9 @@ const attemptFetchingData = async () => {
         console.log("Sports from external API updated.");
 
         const countries = await axios.get('https://apis.codante.io/olympic-games/countries');
-        console.log(countries.data.data);
+        const countryData = countries.data.data
 
-        for (const country of countries.data.data) {
+        for (const country of countryData) {
             // Check if the country already exists to avoid duplicates
             const existingCountry = await Country.findOne({ id: country.id });
             if (existingCountry) {
@@ -181,10 +182,10 @@ const attemptFetchingData = async () => {
         console.log("Countries from external API updated.");
 
         const events = await axios.get('https://apis.codante.io/olympic-games/events?page=1');
+        const eventsData = events.data.data
         lastPage = events.data.meta.last_page
 
-
-        for (const event of events.data.data) {
+        for (const event of eventsData) {
             // Check if the event already exists to avoid duplicates
             const existingEvent = await Event.findOne({ id: event.id });
             if (existingEvent) {
@@ -202,7 +203,8 @@ const attemptFetchingData = async () => {
 
         for (let page = 2; page <= lastPage; page++) {
             const events = await axios.get(`https://apis.codante.io/olympic-games/events?page=${page}`);
-            for (const event of events.data.data) {
+            const eventsData = events.data.data
+            for (const event of eventsData) {
                 // Check if the event already exists to avoid duplicates
                 const existingEvent = await Event.findOne({ id: event.id });
                 if (existingEvent) {
